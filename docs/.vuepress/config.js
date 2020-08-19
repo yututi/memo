@@ -16,7 +16,7 @@ var nav = docs.map(doc => {
 });
 var sidebar = nav.reduce((_sidebar, nav) => {
   var childrenDoc = getChildren(path.join(root, nav.text)).filter(doc => doc != "README.md").map(doc => doc.replace(".md", ""));
-  childrenDoc.unshift("")
+
   _sidebar[nav.link] = childrenDoc;
   return _sidebar;
 }, {});

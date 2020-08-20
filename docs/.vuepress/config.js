@@ -7,27 +7,100 @@ var root = path.resolve(__dirname, "../")
 const getChildren = src => {
   return fs.readdirSync(src);
 }
-var docs = getChildren(root).filter(doc => doc != ".vuepress" && fs.lstatSync(path.join(root, doc)).isDirectory());
-var nav = docs.map(doc => {
+var isDirectory = _path => fs.lstatSync(_path).isDirectory();
+var topCategories = getChildren(root).filter(doc => doc != ".vuepress" && isDirectory(path.join(root, doc)));
+
+function createTree(link, actualPath, excludes) {
+  var tree = {
+    name: link,
+    isFile: false,
+    isDirectory: true,
+    children: []
+  };
+  var children = getChildren(actualPath).filter(child => !excludes.some(exclude => exclude == child));
+  children.forEach(child => {
+    var childPath = path.join(actualPath, child);
+    if (isDirectory(childPath)) {
+      tree.children.push(createTree(child, childPath, excludes));
+    } else {
+      tree.children.push({
+        name: child,
+        isFile: true,
+        isDirectory: false,
+        children: []
+      })
+    }
+  });
+  return tree;
+};
+
+
+var tree = createTree("", root, [".vuepress", "README.md"]);
+
+// 深さ1のノードをnavbarに表示
+var nav = tree.children.map(topNode => {
+  var topNodeName = topNode.name.replace(".md", "")
   return {
-    text: doc,
-    link: `/${doc}/`,
+    text: topNodeName,
+    items: topNode.children.map(secondLayerNode => {
+      var secondLayerNodeName = secondLayerNode.name.replace(".md", "")
+      return {
+        text: secondLayerNodeName,
+        link: `/${topNodeName}/${secondLayerNodeName}/`,
+      }
+    })
   }
 });
-var sidebar = nav.reduce((_sidebar, nav) => {
-  var childrenDoc = getChildren(path.join(root, nav.text)).filter(doc => doc != "README.md").map(doc => doc.replace(".md", ""));
 
-  _sidebar[nav.link] = childrenDoc;
-  return _sidebar;
-}, {});
 
-console.log(sidebar)
+function appendSidebarItem(tree, parentLink, actualParentLink, configObj) {
+  var nodes = [];
+  tree.children.forEach(child => {
+    if (child.isFile) {
+      nodes.push(actualParentLink ? actualParentLink + "/" + child.name.replace(".md", "") : child.name.replace(".md", ""));
+    } else {
+      if (parentLink) {
+        var isUnderSidebarSubItem = parentLink.split("/").length == 2;
+        var link, actualLink;
+        if (isUnderSidebarSubItem) {
+          link = parentLink;
+          actualLink = actualParentLink ? actualParentLink + "/" + child.name : child.name;
+        }
+        else {
+          link = `${parentLink}/${child.name}`;
+          actualLink = "";
+        }
+        appendSidebarItem(
+          child,
+          link,
+          actualLink,
+          configObj);
+      }
+      // ルートの場合
+      else {
+        appendSidebarItem(child, child.name, actualParentLink, configObj);
+      }
+    }
+  });
+  var key = `/${parentLink}/`;
+  if (nodes.length) {
+    if (configObj[key]) {
+      configObj[key] = configObj[key].concat(nodes);
+    } else if (parentLink) {
+      configObj[key] = nodes;
+    }
+  }
+}
+
+var sidebarItem = {};
+appendSidebarItem(tree, "", "", sidebarItem);
+
 
 module.exports = {
   /**
    * Ref：https://v1.vuepress.vuejs.org/config/#title
    */
-  title: '個人メモ',
+  title: 'メモ帳',
   /**
    * Ref：https://v1.vuepress.vuejs.org/config/#description
    */
@@ -56,7 +129,7 @@ module.exports = {
     editLinkText: '',
     lastUpdated: false,
     nav: nav,
-    sidebar: sidebar
+    sidebar: sidebarItem
   },
 
   /**

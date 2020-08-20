@@ -8,7 +8,6 @@ const getChildren = src => {
   return fs.readdirSync(src);
 }
 var isDirectory = _path => fs.lstatSync(_path).isDirectory();
-var topCategories = getChildren(root).filter(doc => doc != ".vuepress" && isDirectory(path.join(root, doc)));
 
 function createTree(link, actualPath, excludes) {
   var tree = {
@@ -129,7 +128,10 @@ module.exports = {
     editLinkText: '',
     lastUpdated: false,
     nav: nav,
-    sidebar: sidebarItem
+    sidebar: sidebarItem,
+    nextLinks: false,
+    prevLinks: false,
+    smoothScroll: true
   },
 
   /**

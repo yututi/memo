@@ -1,4 +1,4 @@
-# GO言語
+# Golang
 
 googleが開発した言語  
 

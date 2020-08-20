@@ -1,0 +1,8 @@
+# Node.js
+
+JavaScript実行環境であるNode.js関連のメモ
+
+## npm vs yarn
+
+速度が違うだけ(yarnのほうが早い)で、できることは変わらない。  
+node.jsに最初から入っているnpmのほうがメンテされ続けると思うので、npm使っといたほうがいい？

@@ -1,6 +1,6 @@
 # Node.js
 
-JavaScript実行環境であるNode.js関連のメモ
+webサーバとしてのNode.jsではなくフロントエンドビルドツールとしてのメモ
 
 ## npm vs yarn
 

@@ -94,7 +94,6 @@ function appendSidebarItem(tree, parentLink, actualParentLink, configObj) {
 var sidebarItem = {};
 appendSidebarItem(tree, "", "", sidebarItem);
 
-
 module.exports = {
   /**
    * Ref：https://v1.vuepress.vuejs.org/config/#title

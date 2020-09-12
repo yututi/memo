@@ -1,6 +1,4 @@
-# Node.js
-
-webサーバとしてのNode.jsではなくフロントエンドビルドツールとしてのメモ
+# NPM
 
 ## npm vs yarn
 

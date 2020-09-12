@@ -90,7 +90,6 @@ function appendSidebarItem(tree, parentLink, actualParentLink, configObj) {
     }
   }
 }
-
 var sidebarItem = {};
 appendSidebarItem(tree, "", "", sidebarItem);
 
